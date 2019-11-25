@@ -12,7 +12,9 @@ class TocaroHandler:
                 {
                     "title": "string",
                     "value": "string"
-                }
+                },
+                {"image_url": "URL"}
+
             ]
         }
 

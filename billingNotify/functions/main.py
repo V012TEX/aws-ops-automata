@@ -8,9 +8,7 @@ def lambda_handler(event, context):
     fx = FxMarketStore()
     fx.fetch_currency_api()
 
-    tocaro = TocaroHandler(
-
-    )
+    tocaro = TocaroHandler()
     tocaro.set_text("VORTEX-AWS " + ce.get_today()[:7] + "月の利用料金明細（" + ce.get_today() + "現在）")
     tocaro.set_color("info")
 
@@ -28,8 +26,10 @@ def lambda_handler(event, context):
 def construct_message(costs):
     message = []
     for service, cost in costs.items():
-        d = {"title": service, "value": str(round(cost, 1)) + "USD"}
-        message.append(d)
+        cost = str(round(cost, 1))
+        if cost != "0.0":
+            d = {"title": service, "value": cost + "USD"}
+            message.append(d)
     return message
 
 

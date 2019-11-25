@@ -28,6 +28,7 @@ class TestFunctions(unittest.TestCase):
         result = self.target.get_costs()
         self.assertDictEqual(result, self.expected_costs)
 
+    @unittest.skip("in case don't output about zero cost")
     def test_construct_message(self):
         expected_message = [{"title": "AWS CloudTrail", "value": "0.0USD"}, {"title": "AWS Config", "value": "1.4USD"},
                             {"title": "AWS Cost Explorer", "value": "0.4USD"}, {"title": "AWS Glue", "value": "0.0USD"},
@@ -38,6 +39,18 @@ class TestFunctions(unittest.TestCase):
                             {"title": "Amazon Elasticsearch Service", "value": "49.1USD"},
                             {"title": "Amazon Simple Notification Service", "value": "0.0USD"},
                             {"title": "Amazon Simple Queue Service", "value": "0.0USD"},
+                            {"title": "Amazon Simple Storage Service", "value": "0.1USD"},
+                            {"title": "AmazonCloudWatch", "value": "6.1USD"}, {"title": "Tax", "value": "18.0USD"}]
+        result = main.construct_message(self.expected_costs)
+        self.assertListEqual(result, expected_message)
+
+    def test_construct_message_without_zero(self):
+        expected_message = [{"title": "AWS Config", "value": "1.4USD"},
+                            {"title": "AWS Cost Explorer", "value": "0.4USD"},
+                            {"title": "AWS Lambda", "value": "0.3USD"}, {"title": "Amazon DynamoDB", "value": "1.9USD"},
+                            {"title": "EC2 - Other", "value": "42.8USD"},
+                            {"title": "Amazon Elastic Compute Cloud - Compute", "value": "77.4USD"},
+                            {"title": "Amazon Elasticsearch Service", "value": "49.1USD"},
                             {"title": "Amazon Simple Storage Service", "value": "0.1USD"},
                             {"title": "AmazonCloudWatch", "value": "6.1USD"}, {"title": "Tax", "value": "18.0USD"}]
         result = main.construct_message(self.expected_costs)
