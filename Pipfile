@@ -8,6 +8,7 @@ pytest = "*"
 pytest-mock = "*"
 neovim = "*"
 flake8 = "*"
+ipython = "*"
 
 [packages]
 aws-sam-cli = "*"

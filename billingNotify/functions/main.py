@@ -9,7 +9,8 @@ def lambda_handler(event, context):
     fx.fetch_currency_api()
 
     tocaro = TocaroHandler()
-    tocaro.set_text("VORTEX-AWS " + ce.get_today()[:7] + "月の利用料金明細（" + ce.get_today() + "現在）")
+
+    tocaro.set_text("VORTEX-AWS " + str(ce.today.month) + "月の利用料金明細（" + str(ce.today.isoformat()) + "現在）")
     tocaro.set_color("info")
 
     costs = ce.get_costs()

@@ -1,15 +1,22 @@
 import boto3
-from datetime import datetime
+from datetime import date
+import calendar
 
 
 class AwsBillingChecker:
     def __init__(self):
         self.client = boto3.client("ce")
         self.costs = {}
+        self.today = date.today()
 
     def get_cost_raw_data(self):
+        start = self.get_first_day().isoformat()
+        end = self.get_last_day().isoformat()
+        return self.fetch_aws_api(start, end)
+
+    def fetch_aws_api(self, start, end):
         cost = self.client.get_cost_and_usage(
-            TimePeriod={'Start': self.get_first_day_of_month(), "End": self.get_today()},
+            TimePeriod={'Start': start, "End": end},
             Granularity="MONTHLY", Metrics=['UnblendedCost'],
             GroupBy=[{"Type": "DIMENSION", "Key": "SERVICE"}])
         return cost
@@ -26,12 +33,12 @@ class AwsBillingChecker:
             total_cost += cost
         return total_cost
 
-    def get_today(self):
-        return str(datetime.today())[:10]
+    def get_first_day(self):
+        return self.today.replace(day=1)
 
-    def get_first_day_of_month(self):
-        today = self.get_today()
-        return today[:8] + "01"
+    def get_last_day(self):
+        last_day = calendar.monthrange(self.today.year, self.today.month)[1]
+        return self.today.replace(day=last_day)
 
 
 if __name__ == '__main__':
