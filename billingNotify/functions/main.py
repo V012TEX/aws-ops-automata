@@ -16,8 +16,8 @@ def lambda_handler(event, context):
     costs = ce.get_costs()
     message = construct_message(costs)
     total_cost = round(ce.get_total_cost(), 2)
-    jpy_total_cost = int(fx.get_jpy(total_cost))
-    message.append({"title": "-----\n★合計金額", "value": str(total_cost) + "USD (約" + str(jpy_total_cost) + "円)"})
+    jpy_total_cost = "{:,d}".format(int(fx.get_jpy(total_cost)))
+    message.append({"title": "--------\n★合計金額", "value": str(total_cost) + "USD (約" + jpy_total_cost + "円)"})
 
     tocaro.set_attachments(message)
     res = tocaro.send2tocaro()
