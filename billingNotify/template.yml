@@ -45,6 +45,7 @@ Resources:
       Environment:
         Variables:
           TOCARO_URL: !Ref TocaroUrl
+          TZ: Asia/Tokyo
       Events:
         NotifytoTocaro:
           Type: Schedule
