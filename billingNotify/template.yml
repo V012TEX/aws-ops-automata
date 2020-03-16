@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: "AWS billing notify function for tocaro"
+
+Globals:
+  Function:
+    Timeout: 180
+
+Parameters:
+  TocaroUrl:
+    Type: String
+    Default: "paste tocaro webhook URL"
+
+Resources:
+  BillingIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: "BillingNotifyLambdaPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                  - "ce:GetCostAndUsage"
+                Resource: "*"
+
+  BillingNotifyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/
+      Handler: main.lambda_handler
+      Runtime: python3.6
+      Role: !GetAtt BillingIamRole.Arn
+      Environment:
+        Variables:
+          TOCARO_URL: !Ref TocaroUrl
+          TZ: Asia/Tokyo
+      Events:
+        NotifytoTocaro:
+          Type: Schedule
+          Properties:
+            Schedule: cron(30 23 ? * SUN-THU *)
+
+  BillingNotifyLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${BillingNotifyFunction}
+      RetentionInDays: 14
+
+Outputs:
+  BillingNotifyFunction:
+    Description: "vortex aws billing notify"
+    Value: !GetAtt BillingNotifyFunction.Arn
+  BillingNotifyFunctionIamRole:
+    Description: "Implicit IAM Role created for billing notify function"
+    Value: !GetAtt BillingIamRole.Arn
